@@ -5,7 +5,7 @@
 #include <util/delay.h>
 
 double dutyCycle = 0.01;
-void interrupt_timer_8bits() {
+int main() {
   /*
    * This generates PWM signal. Its will be on PORTD6, which is linked to OCR0A.
    * It seems that 0A imposes specific Timer Control Register
@@ -37,5 +37,3 @@ void interrupt_timer_8bits() {
 }
 
 ISR(TIMER0_OVF_vect) {}
-
-int main() { interrupt_timer_8bits(); }
