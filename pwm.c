@@ -4,8 +4,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-double dutyCycle = 0.01;
-int main() {
+void start_pwm(double dutyCycle) {
   /*
    * This generates PWM signal. Its will be on PORTD6, which is linked to OCR0A.
    * It seems that 0A imposes specific Timer Control Register
@@ -21,19 +20,29 @@ int main() {
   TIMSK0 = 1 << TOIE0;
   // Turns off power after reaching 50 pct
   sei();
-  // Sets pre-scaler to /1
-  TCCR0B = (1 << CS00);
 
-  // When 10ms is reached, an interrupt is produced
+  OCR0A = dutyCycle * 255;
+  // Sets pre-scaler to /1024
+  TCCR0B = (1 << CS02) | (1 << CS00);
+
+  /// Period is 16.32ms with 16/1024 Mhz, 8bit counter
   //
-  while (1) {
-    _delay_ms(100);
-    dutyCycle += 0.05;
-    OCR0A = dutyCycle * 255;
-    if (dutyCycle >= 1) {
-      dutyCycle = 0;
-    }
-  }
 }
 
 ISR(TIMER0_OVF_vect) {}
+
+int main() {
+
+  double dutyCycle = 0.2;
+  start_pwm(dutyCycle);
+
+  while (1) {
+    _delay_ms(100);
+    dutyCycle += 0.005;
+    if (dutyCycle >= 1) {
+      break;
+    }
+    start_pwm(dutyCycle);
+  }
+  start_pwm(0.2);
+}
