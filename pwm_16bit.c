@@ -36,7 +36,10 @@ void start_pwm(double dutyCycle) {
 ISR(TIMER1_OVF_vect) {}
 
 int main() {
-
+  /*
+   * 544 micro seg is 0 deg in servo
+   * 2400 micro-seg is 180 deg in servo
+   */
   double dutyCycle = 544.0 / 20000.0;
   start_pwm(dutyCycle);
 
